@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据库连接测试</title>
+    <script src="../js/CSInterface.js" type="text/javascript"></script>
+    <script src="../js/Vulcan.js" type="text/javascript"></script>
+    <script src="../js/AgoraLib.js" type="text/javascript"></script>
+</head>
+<body>
+<h1>数据库连接测试</h1>
+<div>
+    主机: <input id="host" type="text"> <br>
+    端口: <input id="port" type="text"> <br>
+    用户名: <input id="username" type="text"> <br>
+    密码: <input id="password" type="text"> <br>
+    数据库: <input id="database" type="text"> <br>
+    sql语句:<input id="sql" type="text">
+</div>
+<div>
+    <input onclick="test()" type="button" value="执行语句">
+    <input onclick="paramTest()" type="button" value="参数测试">
+</div>
+<div>
+    执行结果:<textarea id="result">------执行结果------</textarea>
+</div>
+<script>
+    function test() {
+        var mysql = null;
+        var csInterface = new CSInterface();
+        // var foregroundColor = "666";
+        // csInterface.evalScript("addNewColor('" + foregroundColor + "')");//who could tell me why the lack of ' makes such a strange error!!
+        var host = document.getElementById("host").value;
+        var port = document.getElementById("port").value;
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var database = document.getElementById("database").value;
+        var sql = document.getElementById("sql").value;
+        var result = document.getElementById("result");
+        try {
+            mysql = cep_node.require('mysql');
+        } catch (err) {
+            result.innerHTML="获取mysql出错";
+            return;
+        }
+        var mysqlConn = mysql.createConnection({
+            host: host,
+            user: username,
+            password: password,
+            database: database,
+            port: port
+        });
+        mysqlConn.connect(function (err) {
+            if (err) {
+                result.innerHTML="连接数据库出错";
+                return;
+            }
+        });
+        /*******************执行语句*********************/
+        mysqlConn.query(sql, function (err, result) {
+            if (err) {
+                alert(err.message);
+                return;
+            }
+            var resultTestArea = document.getElementById("result");
+            resultTestArea.innerHTML = JSON.stringify(result,null,2);
+        });
+    }
+    function paramTest() {
+        var host = document.getElementById("host").value;
+        var port = document.getElementById("port").value;
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var database = document.getElementById("database").value;
+        var sql = document.getElementById("sql").value;
+        var result = document.getElementById("result").innerHTML;
+        var str = "host : " +host+" port : "+port+" username : "+username+" password : "+password+" database : "+database
+        +" sql : "+sql+" result : "+result;
+        alert(str);
+    }
+</script>
+</body>
+</html>
